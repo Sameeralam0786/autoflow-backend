@@ -15,11 +15,11 @@ app.use(
 );
 app.use(express.json());
 
-// ===== DATABASE =====
+// ===== DATABASE ====
 mongoose
-  .connect("mongodb://127.0.0.1/autoflow")
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
-  .catch(() => console.log("MongoDB not connected"));
+  .catch((err) => console.error("MongoDB error:", err));
 
 // ===== MODEL =====
 const Lead = mongoose.model("Lead", {
@@ -35,10 +35,11 @@ const Lead = mongoose.model("Lead", {
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "samifatiya0786@gmail.com",
-    pass: "jkiwnppjsnucacgc"
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
+
 
 // ===== CREATE LEAD + ADMIN EMAIL =====
 app.post("/api/leads", async (req, res) => {
@@ -165,6 +166,9 @@ app.patch("/api/leads/:id", async (req, res) => {
 });
 
 // ===== SERVER =====
-app.listen(5000, () => {
-  console.log("Backend running on http://localhost:5000");
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Backend running on port ${PORT}`);
 });
+
